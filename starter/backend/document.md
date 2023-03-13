@@ -1,4 +1,4 @@
-# Documentating Endpoints
+# API Development and Documentation Final Project
 
 ## GET '/categories'
 
