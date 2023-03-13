@@ -48,14 +48,14 @@ class TriviaTestCase(unittest.TestCase):
 
     def test_available_categories(self):
         response = self.client().get('/categories')
-        data = json.loads(response.get_data(as_text=True))
+        data = json.loads(response.data)
 
         self.assertEqual(response.status_code, 200)
         self.assertIn('categories', data)
 
     def test_list_questions(self):
         response = self.client().get('/questions')
-        data = json.loads(response.get_data(as_text=True))
+        data = json.loads(response.data)
 
         self.assertEqual(response.status_code, 200)
         self.assertIn('questions', data)
@@ -64,7 +64,7 @@ class TriviaTestCase(unittest.TestCase):
     def test_delete_question(self):
         question = Question.query.first()
         response = self.client().delete(f'/questions/{question.id}')
-        data = json.loads(response.get_data(as_text=True))
+        data = json.loads(response.data)
 
         self.assertEqual(response.status_code, 200)
 
@@ -76,17 +76,17 @@ class TriviaTestCase(unittest.TestCase):
             'difficulty': 2
         }
         response = self.client().post('/questions', json=new_question)
-        data = json.loads(response.get_data(as_text=True))
+        #data = json.loads(response.data)
 
         self.assertEqual(response.status_code, 200)
 
-        question = Question.query.filter(Question.question == new_question['question']).one_or_none()
-        self.assertIsNotNone(question)
+        questions = Question.query.filter(Question.question == new_question['question']).all()
+        self.assertGreater(len(questions), 0)
 
     def test_search_questions(self):
         search_term = 'title'
         response = self.client().post('/questions/search', json={'searchTerm': search_term})
-        data = json.loads(response.get_data(as_text=True))
+        data = json.loads(response.data)
 
         self.assertEqual(response.status_code, 200)
         self.assertIsInstance(data['questions'], list)
@@ -97,7 +97,7 @@ class TriviaTestCase(unittest.TestCase):
     def test_category_questions(self):
         category_id = 1
         response = self.client().get(f'/categories/{category_id}/questions')
-        data = json.loads(response.get_data(as_text=True))
+        data = json.loads(response.data)
 
         self.assertEqual(response.status_code, 200)
         self.assertIsInstance(data['questions'], list)
@@ -113,7 +113,7 @@ class TriviaTestCase(unittest.TestCase):
             'previous_questions': previous_questions
         }
         response = self.client().post('/quizzes', json=quiz_data)
-        data = json.loads(response.get_data(as_text=True))
+        data = json.loads(response.data)
 
         self.assertEqual(response.status_code, 200)
         self.assertIsNotNone(data['question'])
